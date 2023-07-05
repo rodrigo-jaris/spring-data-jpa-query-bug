@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: 202307050937_initialChangeLog.sql
+      relativeToChangelogFile: true
