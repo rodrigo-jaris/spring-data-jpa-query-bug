@@ -14,6 +14,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
@@ -32,6 +33,7 @@ class Test3RepositoryTest extends BaseIntegrationTest {
     private Test3 test3;
 
     private static final Sort SORT_BUG = Sort.by(Sort.Direction.DESC, "testDuplicateColumnName");
+    private static final Sort SORT_WITH_ALIAS_BUG = Sort.by(Sort.Direction.DESC, "t3.testDuplicateColumnName");
 
     @BeforeEach
     void createData() {
@@ -96,21 +98,70 @@ class Test3RepositoryTest extends BaseIntegrationTest {
      * </code>
      */
     @Test
-    void testFindTest3ByTest1HqlShouldFailWhenSortingByDuplicateColumnName() {
+    void testFindTest3ByTest1HqlFailShouldFailWhenSortingByDuplicateColumnName() {
         var test1Id = test1.getId();
         var ex = assertThrows(
                 InvalidDataAccessApiUsageException.class,
-                () -> test3Repository.findTest3ByTest1Hql(test1Id, SORT_BUG));
+                () -> test3Repository.findTest3ByTest1HqlFail(test1Id, SORT_BUG));
         ex.printStackTrace();
     }
 
     // The same error happens in this test.
     @Test
-    void testFindTest3ByTest2HqlShouldFailWhenSortingByDuplicateColumnName() {
+    void testFindTest3ByTest2HqlFailShouldFailWhenSortingByDuplicateColumnName() {
         var test2Id = test2.getId();
         var ex = assertThrows(
                 InvalidDataAccessApiUsageException.class,
-                () -> test3Repository.findTest3ByTest2Hql(test2Id, SORT_BUG));
+                () -> test3Repository.findTest3ByTest2HqlFail(test2Id, SORT_BUG));
+        ex.printStackTrace();
+    }
+
+    @Test
+    void testFindTest3ByTest1HqlSuccessShouldSucceed() {
+        var test1Id = test1.getId();
+        assertDoesNotThrow(() -> test3Repository.findTest3ByTest1HqlSuccess(test1Id, SORT_BUG));
+    }
+
+    @Test
+    void testFindTest3ByTest2HqlSuccessShouldSucceed() {
+        var test2Id = test2.getId();
+        assertDoesNotThrow(() -> test3Repository.findTest3ByTest2HqlSuccess(test2Id, SORT_BUG));
+    }
+
+    @Test
+    void testFindTest3ByTest1HqlFailShouldFailWhenSortingByDuplicateColumnNameWithAlias() {
+        var test1Id = test1.getId();
+        var ex = assertThrows(
+                InvalidDataAccessApiUsageException.class,
+                () -> test3Repository.findTest3ByTest1HqlFail(test1Id, SORT_WITH_ALIAS_BUG));
+        ex.printStackTrace();
+    }
+
+    // The same error happens in this test.
+    @Test
+    void testFindTest3ByTest2HqlFailShouldFailWhenSortingByDuplicateColumnNameWithAlias() {
+        var test2Id = test2.getId();
+        var ex = assertThrows(
+                InvalidDataAccessApiUsageException.class,
+                () -> test3Repository.findTest3ByTest2HqlFail(test2Id, SORT_WITH_ALIAS_BUG));
+        ex.printStackTrace();
+    }
+
+    @Test
+    void testFindTest3ByTest1HqlSuccessShouldFailWhenSortingByDuplicateColumnNameWithAlias() {
+        var test1Id = test1.getId();
+        var ex = assertThrows(
+                InvalidDataAccessApiUsageException.class,
+                () -> test3Repository.findTest3ByTest1HqlSuccess(test1Id, SORT_WITH_ALIAS_BUG));
+        ex.printStackTrace();
+    }
+
+    @Test
+    void testFindTest3ByTest2HqlSuccessShouldFailWhenSortingByDuplicateColumnNameWithAlias() {
+        var test2Id = test2.getId();
+        var ex = assertThrows(
+                InvalidDataAccessApiUsageException.class,
+                () -> test3Repository.findTest3ByTest2HqlSuccess(test2Id, SORT_WITH_ALIAS_BUG));
         ex.printStackTrace();
     }
 }
